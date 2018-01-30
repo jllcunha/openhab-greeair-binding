@@ -30,7 +30,12 @@
 				<label>Refresh time interval</label>
 				<description>Refresh time interval in seconds.</description>
 				<default>1</default>
-			</parameter></config-description>
+			</parameter>
+			<parameter name="broadcastAddress" type="text" required="true">
+				<label>Broadcast Address</label>
+				<description>Enter the network Broadcast IP for your network</description>
+				<context>network-address</context>
+				<default>255.255.255.255</default></parameter></config-description>
 	</thing-type>
 
 	<!--Binding channels-->
