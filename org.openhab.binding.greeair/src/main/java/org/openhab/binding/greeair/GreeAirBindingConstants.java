@@ -61,7 +61,7 @@ public class GreeAirBindingConstants {
     /*
      * The IP Address used to used to send Scan Datagram to Gree Airconditioners.
      **/
-    public static final String DATAGRAM_BROADCAST_IP_ADDRESS = "192.168.1.255";
+    // public static final String DATAGRAM_BROADCAST_IP_ADDRESS = "192.168.1.255";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID GREE_THING_TYPE = new ThingTypeUID(BINDING_ID, "greeairthing");
