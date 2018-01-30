@@ -19,10 +19,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.openhab.binding.greeair.handler.GreeAirHandler;
 import org.openhab.binding.greeair.internal.encryption.CryptoUtil;
 import org.openhab.binding.greeair.internal.gson.GreeScanReponsePack4Gson;
 import org.openhab.binding.greeair.internal.gson.GreeScanRequest4Gson;
 import org.openhab.binding.greeair.internal.gson.GreeScanResponse4Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,7 +35,7 @@ import com.google.gson.stream.JsonReader;
  * The GreeDeviceFinder provides functionality for searching for
  * Gree Airconditioners on the network and keeping a list of
  * found devices.
- * 
+ *
  * @author John Cunha - Initial contribution
  */
 
@@ -42,12 +45,15 @@ public class GreeDeviceFinder {
     protected HashMap<String, GreeDevice> mDevicesHashMap = new HashMap<>();
 
     public GreeDeviceFinder(InetAddress broadcastAddress) throws UnknownHostException {
-        mIPAddress = InetAddress.getByName("192.168.1.255");
+        // mIPAddress = InetAddress.getByName("192.168.1.255");
+        mIPAddress = broadcastAddress;
     }
 
     public void Scan(DatagramSocket clientSocket) throws IOException, Exception {
         byte[] sendData = new byte[1024];
         byte[] receiveData = new byte[1024];
+
+        Logger logger = LoggerFactory.getLogger(GreeAirHandler.class);
 
         // Send the Scan message
         // GreeProtocolUtils protocolUtils = new GreeProtocolUtils();
@@ -60,6 +66,8 @@ public class GreeDeviceFinder {
         Gson gson = gsonBuilder.create();
         String scanReq = gson.toJson(scanGson);
         sendData = scanReq.getBytes();
+
+        logger.trace("Greeair Binding Sending scan packet to {}", mIPAddress);
 
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, mIPAddress, 7000);
         clientSocket.send(sendPacket);
@@ -94,6 +102,8 @@ public class GreeDeviceFinder {
                 if (decryptedMsg == null) {
                     continue;
                 }
+                logger.trace("Greeair Binding Response received from address {}", remoteAddress);
+                logger.trace("Greeair Binding Response : {}", decryptedMsg);
 
                 // Create the JSON to hold the response values
                 stringReader = new StringReader(decryptedMsg);
