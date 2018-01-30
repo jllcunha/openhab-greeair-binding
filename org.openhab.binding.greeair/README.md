@@ -23,7 +23,7 @@ Fans can be manually created in the *PaperUI* or *HABmin*, or by placing a *.thi
 
 ## Thing Configuration
 
-The Air Conditioners IP address and refresh rate (in seconds) is set at time of discovery.  However, in the event that any of this information changes, the Air Conditioners configuration must be updated.
+The Air Conditioners IP address and refresh rate (in seconds) and network broadcast address are set at time of discovery.  However, in the event that any of this information changes, the Air Conditioners configuration must be updated.
 
 ## Channels
 
@@ -33,30 +33,30 @@ The following channels are supported for fans:
 |-------------------------|--------------|-------------------------------------------------------|
 | power-channel           | Switch       | Power on/off the Air Conditioner                      |
 | mode-channel            | Number       | Sets the operating mode of the Air Conditioner        |
-|                         |              | Mode: Auto: 0, Cool: 1, Dry: 2, Fan: 3, Heat: 4       |
-|                         |              | For more details see the Air Conditioner's operating  |
-|                         |              | manual.                                               |
+|                                        | Mode: Auto: 0, Cool: 1, Dry: 2, Fan: 3, Heat: 4       |
+|                                        | For more details see the Air Conditioner's operating  |
+|                                        | manual.                                               |
 | turbo-channel           | Switch       | Set on/off the Air Conditioner's Turbo mode.          |
-|                         |              | For more details see the Air Conditioner's operating  |
-|                         |              | manual.                                               |
+|                                        | For more details see the Air Conditioner's operating  |
+|                                        | manual.                                               |
 | light-channel           | Switch       | Enable/disable the front display on the Air           |
-|                         |              | Conditioner if applicable to the Air Conditioner model|
+|                                        | Conditioner if applicable to the Air Conditioner model|
 | temp-channel            | Number       | Sets the desired room temperature                     |
 | swingvertical-channel   | Number       | Sets the vertical swing action on the Air Conditioner |
-|                         |              | Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5,  |
-|                         |              | Down : 6                                              |
+|                                        | Full Swing: 1, Up: 2, MidUp: 3, Mid: 4, Mid Down: 5,  |
+|                                        | Down : 6                                              |
 | windspeed-channel       | Number       | Sets the fan speed on the Air conditioner             |
-|                         |              | Auto:0, Low:1, MidLow:2, Mid:3, MidHigh:4, High:5     |
-|                         |              | The number of speeds depends on the Air Conditioner   |
-|                         |              | model.                                                |
+|                                        | Auto:0, Low:1, MidLow:2, Mid:3, MidHigh:4, High:5     |
+|                                        | The number of speeds depends on the Air Conditioner   |
+|                                        | model.                                                |
 | air-channel             | Switch       | Set on/off the Air Conditioner's Air function if      |
-|                         |              | applicable to the Air Conditioner model               |
+|                                        | applicable to the Air Conditioner model               |
 | dry-channel             | Switch       | Set on/off the Air Conditioner's Dry function if      |
-|                         |              | applicable to the Air Conditioner model               |
+|                                        | applicable to the Air Conditioner model               |
 | health-channel          | Switch       | Set on/off the Air Conditioner's Health function if   |
-|                         |              | applicable to the Air Conditioner model               |
-| pwrsav-channel          | Switch       | Set on/off the Air Conditioner's Power Saving function|
-|                         |              | if applicable to the Air Conditioner model            |
+|                                        | applicable to the Air Conditioner model               |
+| pwrsav-channel          | Switch       | Set on/off the Air Conditioner's Power Saving function|   |
+|                                        | if applicable to the Air Conditioner model            |
 
 
 ## Full Example
