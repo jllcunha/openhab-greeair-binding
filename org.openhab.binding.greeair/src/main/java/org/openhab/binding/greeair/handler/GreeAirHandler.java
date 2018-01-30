@@ -52,6 +52,7 @@ public class GreeAirHandler extends BaseThingHandler {
     private boolean firstUpdatefinished = false;
     private long lastRefreshTime = 0;
     private String ipAddress = null;
+    private String broadcastAddress = null;
     DatagramSocket clientSocket = null;
 
     @SuppressWarnings(value = { "null" })
@@ -212,15 +213,19 @@ public class GreeAirHandler extends BaseThingHandler {
         }
         ipAddress = config.getIpAddress();
         refreshTime = config.getRefresh();
+        broadcastAddress = config.getBroadcastAddress();
 
         // Now Scan For Airconditioners
         try {
+            // First calculate the Broadcast address based on the available interfaces
+            InetAddress broadcastIp = InetAddress.getByName(broadcastAddress);
+
             // Create a new Datagram socket with a specified timeout
             clientSocket = new DatagramSocket();
             clientSocket.setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
 
             // Firstly, lets find all Gree Airconditioners on the network
-            deviceFinder = new GreeDeviceFinder(InetAddress.getByName(DATAGRAM_BROADCAST_IP_ADDRESS));
+            deviceFinder = new GreeDeviceFinder(broadcastIp);
             deviceFinder.Scan(clientSocket);
             logger.debug("GreeAircon found {} Gree Devices during scanning", deviceFinder.GetScannedDeviceCount());
 
