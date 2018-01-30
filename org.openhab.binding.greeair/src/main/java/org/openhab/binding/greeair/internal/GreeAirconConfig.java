@@ -15,10 +15,15 @@ package org.openhab.binding.greeair.internal;
  */
 public class GreeAirconConfig {
     private String ipAddress;
+    private String broadcastAddress;
     private Integer refresh;
 
     public String getIpAddress() {
         return ipAddress;
+    }
+
+    public String getBroadcastAddress() {
+        return broadcastAddress;
     }
 
     public void setRefresh(Integer refresh) {
@@ -29,6 +34,10 @@ public class GreeAirconConfig {
         this.ipAddress = ipAddress;
     }
 
+    public void setBroadcastAddress(String ipAddress) {
+        this.broadcastAddress = ipAddress;
+    }
+
     public Integer getRefresh() {
         return refresh;
     }
@@ -36,6 +45,9 @@ public class GreeAirconConfig {
     public boolean isValid() {
         try {
             if (ipAddress.isEmpty()) {
+                return false;
+            }
+            if (broadcastAddress.isEmpty()) {
                 return false;
             }
             if (refresh.intValue() <= 0) {
