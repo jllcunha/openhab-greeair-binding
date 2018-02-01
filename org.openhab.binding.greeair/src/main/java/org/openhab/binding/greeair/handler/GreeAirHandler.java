@@ -322,6 +322,7 @@ public class GreeAirHandler extends BaseThingHandler {
             switch (channelID) {
                 case POWER_CHANNEL:
                     if (thisDevice.HasStatusValChanged("Pow")) {
+                        logger.trace("Pow value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Pow");
                         if (stateValue.intValue() != 1) {
@@ -333,6 +334,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
                 case MODE_CHANNEL:
                     if (thisDevice.HasStatusValChanged("Mod")) {
+                        logger.trace("Mod value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Mod");
                         state = new DecimalType(stateValue);
@@ -340,6 +342,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
                 case TURBO_CHANNEL:
                     if (thisDevice.HasStatusValChanged("Tur")) {
+                        logger.trace("Mod value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Tur");
                         if (stateValue.intValue() != 1) {
@@ -351,6 +354,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
                 case LIGHT_CHANNEL:
                     if (thisDevice.HasStatusValChanged("Lig")) {
+                        logger.trace("Lig value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Lig");
                         if (stateValue.intValue() != 1) {
@@ -362,6 +366,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
                 case TEMP_CHANNEL:
                     if (thisDevice.HasStatusValChanged("SetTem")) {
+                        logger.trace("SetTem value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("SetTem");
                         state = new DecimalType(stateValue);
@@ -369,6 +374,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
                 case SWINGV_CHANNEL:
                     if (thisDevice.HasStatusValChanged("SwUpDn")) {
+                        logger.trace("SwUpDn value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("SwUpDn");
                         state = new DecimalType(stateValue);
@@ -376,6 +382,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
                 case WINDSPEED_CHANNEL:
                     if (thisDevice.HasStatusValChanged("WdSpd")) {
+                        logger.trace("WdSpd value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("WdSpd");
                         state = new DecimalType(stateValue);
@@ -383,6 +390,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
                 case AIR_CHANNEL:
                     if (thisDevice.HasStatusValChanged("Air")) {
+                        logger.trace("Air value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Air");
                         if (stateValue.intValue() != 1) {
@@ -394,6 +402,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
                 case DRY_CHANNEL:
                     if (thisDevice.HasStatusValChanged("Blo")) {
+                        logger.trace("Blo value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Blo");
                         if (stateValue.intValue() != 1) {
@@ -405,6 +414,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
                 case HEALTH_CHANNEL:
                     if (thisDevice.HasStatusValChanged("Health")) {
+                        logger.trace("Health value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Health");
                         if (stateValue.intValue() != 1) {
@@ -416,6 +426,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
                 case PWRSAV_CHANNEL:
                     if (thisDevice.HasStatusValChanged("SvSt")) {
+                        logger.trace("SvSt value has changed!");
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("SvSt");
                         if (stateValue.intValue() != 1) {
@@ -427,6 +438,7 @@ public class GreeAirHandler extends BaseThingHandler {
                     break;
             }
             if (state != null && statusChanged == true) {
+                logger.trace("Updating channel state for ChannelID {} : ", channelID);
                 updateState(channelID, state);
             }
         }
