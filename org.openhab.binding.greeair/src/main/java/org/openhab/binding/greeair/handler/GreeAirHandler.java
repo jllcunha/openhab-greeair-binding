@@ -285,11 +285,14 @@ public class GreeAirHandler extends BaseThingHandler {
 
                 try {
                     logger.debug("Greeair executing automatic update of values");
-
                     // safeguard for multiple REFRESH commands
                     if (isMinimumRefreshTimeExceeded()) {
+                        logger.debug("Fetching status values from device.");
                         // Get the current status from the Airconditioner
                         thisDevice.getDeviceStatus(clientSocket);
+                    } else {
+                        logger.debug(
+                                "Skipped fetching status values from device because minimum refresh time not reached");
                     }
 
                     // Update All Channels
@@ -313,7 +316,7 @@ public class GreeAirHandler extends BaseThingHandler {
     private void publishChannelIfLinked(ChannelUID channelUID) {
         String channelID = channelUID.getId();
         boolean statusChanged = false;
-        if (isLinked(channelID)) {
+        if (channelID != null && isLinked(channelID)) {
             State state = null;
             Integer stateValue = null;
             switch (channelID) {
