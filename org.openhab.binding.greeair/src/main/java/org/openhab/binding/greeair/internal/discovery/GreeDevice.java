@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import org.openhab.binding.greeair.handler.GreeAirHandler;
 import org.openhab.binding.greeair.internal.encryption.CryptoUtil;
 import org.openhab.binding.greeair.internal.gson.GreeBindRequest4Gson;
 import org.openhab.binding.greeair.internal.gson.GreeBindRequestPack4Gson;
@@ -33,6 +34,8 @@ import org.openhab.binding.greeair.internal.gson.GreeReqStatusPack4Gson;
 import org.openhab.binding.greeair.internal.gson.GreeScanResponse4Gson;
 import org.openhab.binding.greeair.internal.gson.GreeStatusResponse4Gson;
 import org.openhab.binding.greeair.internal.gson.GreeStatusResponsePack4Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -54,6 +57,7 @@ public class GreeDevice {
     private GreeBindResponse4Gson bindResponseGson = null;
     private GreeStatusResponse4Gson statusResponseGson = null;
     private GreeStatusResponsePack4Gson prevStatusResponsePackGson = null;
+    private final Logger logger = LoggerFactory.getLogger(GreeAirHandler.class);
 
     public Boolean getIsBound() {
         return mIsBound;
@@ -530,9 +534,12 @@ public class GreeDevice {
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getAddress(), getPort());
         clientSocket.send(sendPacket);
 
+        logger.trace("Sending Status request packet to device");
+
         // Recieve a response
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         clientSocket.receive(receivePacket);
+        logger.trace("Status request packet received from device");
         String modifiedSentence = new String(receivePacket.getData());
 
         // Keep a copy of the old response to be used to check if values have changed
@@ -545,6 +552,8 @@ public class GreeDevice {
         StringReader stringReader = new StringReader(modifiedSentence);
         statusResponseGson = gson.fromJson(new JsonReader(stringReader), GreeStatusResponse4Gson.class);
         statusResponseGson.decryptedPack = CryptoUtil.decryptPack(this.getKey().getBytes(), statusResponseGson.pack);
+
+        logger.trace("Response from device: {}", statusResponseGson.decryptedPack);
 
         // Create the JSON to hold the response values
         stringReader = new StringReader(statusResponseGson.decryptedPack);
