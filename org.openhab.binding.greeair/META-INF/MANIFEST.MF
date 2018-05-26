@@ -6,16 +6,14 @@ Bundle-Name: GreeAir Binding
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.openhab.binding.greeair;singleton:=true
 Bundle-Vendor: openHAB
-Bundle-Version: 2.2.0.qualifier
+Bundle-Version: 2.3.0.qualifier
 Export-Package: 
  org.openhab.binding.greeair,
  org.openhab.binding.greeair.handler
 Import-Package: 
  com.google.gson,
  com.google.gson.stream,
- org.eclipse.jdt.annotation;resolution:=optional,
  org.eclipse.smarthome.config.core,
- org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.library.types,
  org.eclipse.smarthome.core.thing,
  org.eclipse.smarthome.core.thing.binding,
@@ -24,6 +22,5 @@ Import-Package:
  org.eclipse.smarthome.core.types,
  org.openhab.binding.greeair,
  org.openhab.binding.greeair.handler,
- org.osgi.service.component.annotations;resolution:=optional,
  org.slf4j
 Service-Component: OSGI-INF/*.xml

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,14 +14,19 @@ import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.openhab.binding.greeair.handler.GreeAirHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The CryptoUtil class provides functionality for encrypting and decrypting
  * messages sent to and from the Air Conditioner
- * 
+ *
  * @author John Cunha - Initial contribution
  */
 
 public class CryptoUtil {
+    static private final Logger logger = LoggerFactory.getLogger(GreeAirHandler.class);
     static String AES_General_Key = "a3K8Bx%2r8Y7#xDh";
 
     public static String GetAESGeneralKey() {
@@ -48,7 +53,7 @@ public class CryptoUtil {
 
             descrytpedMessage = new String(bytePlainText);
         } catch (Exception ex) {
-            System.out.println(ex);
+            logger.debug("Greeair failed to decrypt the recieved data due to {} ", ex.getMessage());
         }
         return descrytpedMessage;
     }
@@ -66,7 +71,7 @@ public class CryptoUtil {
             encrytpedMessage = new String(newencoder.encode(bytePlainText));
             encrytpedMessage = encrytpedMessage.substring(0, encrytpedMessage.length());
         } catch (Exception ex) {
-            System.out.println(ex);
+            logger.debug("Greeair failed to encrypt the data to send to device due to {} ", ex.getMessage());
         }
         return encrytpedMessage;
     }

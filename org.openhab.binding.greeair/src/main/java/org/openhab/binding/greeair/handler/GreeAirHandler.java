@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2017 by the respective copyright holders.
+ * Copyright (c) 2010-2018 by the respective copyright holders.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,7 +19,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+//import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -29,6 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+//import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.greeair.internal.GreeAirconConfig;
 import org.openhab.binding.greeair.internal.discovery.GreeDevice;
 import org.openhab.binding.greeair.internal.discovery.GreeDeviceFinder;
@@ -40,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author John Cunha - Initial contribution
+ *         Mihai Badea - Switch channel improvements (many thanks!)
  */
 // @NonNullByDefault
 public class GreeAirHandler extends BaseThingHandler {
@@ -49,7 +52,7 @@ public class GreeAirHandler extends BaseThingHandler {
     private GreeAirconConfig config;
     private Integer refreshTime;
     private ScheduledFuture<?> refreshTask;
-    private boolean firstUpdatefinished = false;
+    // private boolean firstUpdatefinished = false;
     private long lastRefreshTime = 0;
     private String ipAddress = null;
     private String broadcastAddress = null;
@@ -77,7 +80,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 }
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printStackTrace();
             }
         } else if (channelUID.getId().equals(MODE_CHANNEL)) {
             try {
@@ -85,7 +88,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 thisDevice.SetDeviceMode(clientSocket, val);
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printStackTrace();
             }
         } else if (channelUID.getId().equals(TURBO_CHANNEL)) {
             try {
@@ -99,7 +102,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 }
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printStackTrace();
             }
         } else if (channelUID.getId().equals(LIGHT_CHANNEL)) {
             try {
@@ -113,7 +116,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 }
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printstackTrace();
             }
         } else if (channelUID.getId().equals(TEMP_CHANNEL)) {
             try {
@@ -121,7 +124,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 thisDevice.SetDeviceTempSet(clientSocket, val);
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printstackTrace();
             }
         } else if (channelUID.getId().equals(SWINGV_CHANNEL)) {
             try {
@@ -129,7 +132,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 thisDevice.SetDeviceSwingVertical(clientSocket, val);
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printstackTrace();
             }
         } else if (channelUID.getId().equals(WINDSPEED_CHANNEL)) {
             try {
@@ -137,7 +140,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 thisDevice.SetDeviceWindspeed(clientSocket, val);
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printstackTrace();
             }
         } else if (channelUID.getId().equals(AIR_CHANNEL)) {
             try {
@@ -151,7 +154,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 }
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printstackTrace();
             }
         } else if (channelUID.getId().equals(DRY_CHANNEL)) {
             try {
@@ -165,7 +168,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 }
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printstackTrace();
             }
         } else if (channelUID.getId().equals(HEALTH_CHANNEL)) {
             try {
@@ -179,7 +182,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 }
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printstackTrace();
             }
         } else if (channelUID.getId().equals(PWRSAV_CHANNEL)) {
             try {
@@ -193,7 +196,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 }
             } catch (Exception e) {
                 logger.debug("Greeair failed to update channel {} due to {} ", channelUID.getId(), e.getMessage());
-                e.printStackTrace();
+                // e.printstackTrace();
             }
         }
     }
@@ -246,13 +249,13 @@ public class GreeAirHandler extends BaseThingHandler {
             }
         } catch (UnknownHostException e) {
             logger.debug("Greeair failed to scan for airconditioners due to {} ", e.getMessage());
-            e.printStackTrace();
+            // e.printstackTrace();
         } catch (IOException e) {
             logger.debug("Greeair failed to scan for airconditioners due to {} ", e.getMessage());
-            e.printStackTrace();
+            // e.printstackTrace();
         } catch (Exception e) {
             logger.debug("Greeair failed to scan for airconditioners due to {} ", e.getMessage());
-            e.printStackTrace();
+            // e.printstackTrace();
         }
         updateStatus(ThingStatus.OFFLINE);
     }
@@ -304,7 +307,7 @@ public class GreeAirHandler extends BaseThingHandler {
                 } catch (Exception e) {
                     logger.debug("Greeair failed during automatic update of airconditioner values due to {} ",
                             e.getMessage());
-                    e.printStackTrace();
+                    // e.printstackTrace();
                 }
             }
         };
@@ -316,7 +319,8 @@ public class GreeAirHandler extends BaseThingHandler {
     private void publishChannelIfLinked(ChannelUID channelUID) {
         String channelID = channelUID.getId();
         boolean statusChanged = false;
-        if (channelID != null && isLinked(channelID)) {
+        // if (channelID != null && isLinked(channelID)) {
+        if (isLinked(channelID)) {
             State state = null;
             Integer stateValue = null;
             switch (channelID) {
@@ -326,9 +330,11 @@ public class GreeAirHandler extends BaseThingHandler {
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Pow");
                         if (stateValue.intValue() != 1) {
-                            state = new StringType("OFF");
+                            state = OnOffType.OFF;
+                            // state = new StringType("OFF");
                         } else {
-                            state = new StringType("ON");
+                            state = OnOffType.ON;
+                            // state = new StringType("ON");
                         }
                     }
                     break;
@@ -346,9 +352,11 @@ public class GreeAirHandler extends BaseThingHandler {
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Tur");
                         if (stateValue.intValue() != 1) {
-                            state = new StringType("OFF");
+                            state = OnOffType.OFF;
+                            // state = new StringType("OFF");
                         } else {
-                            state = new StringType("ON");
+                            state = OnOffType.ON;
+                            // state = new StringType("ON");
                         }
                     }
                     break;
@@ -358,9 +366,11 @@ public class GreeAirHandler extends BaseThingHandler {
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Lig");
                         if (stateValue.intValue() != 1) {
-                            state = new StringType("OFF");
+                            state = OnOffType.OFF;
+                            // state = new StringType("OFF");
                         } else {
-                            state = new StringType("ON");
+                            state = OnOffType.ON;
+                            // state = new StringType("ON");
                         }
                     }
                     break;
@@ -394,9 +404,11 @@ public class GreeAirHandler extends BaseThingHandler {
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Air");
                         if (stateValue.intValue() != 1) {
-                            state = new StringType("OFF");
+                            state = OnOffType.OFF;
+                            // state = new StringType("OFF");
                         } else {
-                            state = new StringType("ON");
+                            state = OnOffType.ON;
+                            // state = new StringType("ON");
                         }
                     }
                     break;
@@ -406,9 +418,11 @@ public class GreeAirHandler extends BaseThingHandler {
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Blo");
                         if (stateValue.intValue() != 1) {
-                            state = new StringType("OFF");
+                            state = OnOffType.OFF;
+                            // state = new StringType("OFF");
                         } else {
-                            state = new StringType("ON");
+                            state = OnOffType.ON;
+                            // state = new StringType("ON");
                         }
                     }
                     break;
@@ -418,9 +432,11 @@ public class GreeAirHandler extends BaseThingHandler {
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("Health");
                         if (stateValue.intValue() != 1) {
-                            state = new StringType("OFF");
+                            state = OnOffType.OFF;
+                            // state = new StringType("OFF");
                         } else {
-                            state = new StringType("ON");
+                            state = OnOffType.ON;
+                            // state = new StringType("ON");
                         }
                     }
                     break;
@@ -430,9 +446,11 @@ public class GreeAirHandler extends BaseThingHandler {
                         statusChanged = true;
                         stateValue = thisDevice.GetIntStatusVal("SvSt");
                         if (stateValue.intValue() != 1) {
-                            state = new StringType("OFF");
+                            state = OnOffType.OFF;
+                            // state = new StringType("OFF");
                         } else {
-                            state = new StringType("ON");
+                            state = OnOffType.ON;
+                            // state = new StringType("ON");
                         }
                     }
                     break;

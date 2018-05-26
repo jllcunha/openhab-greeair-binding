@@ -6,15 +6,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.openhab.binding.greeair.internal.gson;
+package org.openhab.binding.greeair.internal;
 
 /**
+ * The {@link GreeAirConfiguration} class contains fields mapping thing configuration parameters.
  *
- * The GreeScanRequest4Gson class is used by Gson to hold values sent to
- * the Air Conditioner during Scan Requests to the Air Conditioner.
- *
- * @author John Cunha - Initial contribution
+ * @author JLLCunha - Initial contribution
  */
-public class GreeScanRequest4Gson {
-    public String t = null;
+public class GreeAirConfiguration {
+
+    /**
+     * Sample configuration parameter. Replace with your own.
+     */
+    public String config1;
 }
