@@ -2,7 +2,8 @@
 
 This binding allows you too add Gree Air Conditioners as things. Once added as a thing, the user can control the Air Conditioner, similarly to how the Air Conditioner is controlled using the remote control or smartphone app.
 
-Note: The Gree Air Conditioner must already be setup on the wifi network and must have a fixed IP Address.
+Note : The Gree Air Conditioner must already be setup on the wifi network and must have a fixed IP Address.
+Note : UPDATE : Added Fahrenheit Support
 
 ## Supported Things
 
