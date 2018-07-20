@@ -49,6 +49,7 @@ import com.google.gson.stream.JsonReader;
 
 public class GreeDevice {
     private final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
+    private final static HashMap<String, HashMap<String,Integer>> tempRanges = createTempRangeMap();
     private Boolean mIsBound = false;
     private InetAddress mAddress;
     private int mPort = 0;
@@ -269,16 +270,109 @@ public class GreeDevice {
         return GetIntStatusVal("Lig");
     }
 
+    private static HashMap<String, HashMap<String,Integer>> createTempRangeMap()
+    {   //Create Hash Look Up for C and F Temperature Ranges for gree A/C units
+        //f_range = {86,61}, c_range= {16,30}
+        HashMap<String, HashMap<String,Integer>> tempRanges = new HashMap<>();
+        HashMap<String, Integer> hmf = new HashMap<>();
+        HashMap<String, Integer> hmc= new HashMap<>();
+
+        hmf.put("min",new Integer(61)); // F
+        hmf.put("max",new Integer(86));
+        tempRanges.put("F",hmf);
+
+        hmc.put("min",new Integer(16)); //C
+        hmc.put("max",new Integer(30));
+        tempRanges.put("C",hmc);
+
+        return tempRanges;
+    }
+
+    private Integer[] ValidateTemperatureRangeForTempSet(Integer newVal,Integer CorF) {
+        // Checks input ranges for validity and TempUn for validity
+        // Uses newVal as priority and tries to validate and determine intent
+        // For example if value is 75 and TempUn says Celsius, change TempUn to Fahrenheit
+        //
+        final String[] minMaxLUT = {"max","min"}; // looks up 0 = C = max, 1 = F = min
+        final String [] tempScaleLUT = {"C","F"}; //Look Up Table used to convert TempUn integer 0,1 to "C" to "F" string for hashmap
+        HashMap<String, Integer> nullCorFLUT = new HashMap<>(); // simple look up table for logic
+            nullCorFLUT.put("C",new Integer(0));
+            nullCorFLUT.put("F",new Integer(1));
+            nullCorFLUT.put("INVALID",new Integer(0));
+
+        String validRangeCorF; // stores if the input range is a valid C or F temperature
+
+        newVal = Math.max(newVal,Math.min(tempRanges.get("C").get("min"),tempRanges.get("F").get("min"))); // force to global min
+        newVal = Math.min(newVal,Math.max(tempRanges.get("C").get("max"),tempRanges.get("F").get("max"))); // force to global max
+
+        if ((newVal >= tempRanges.get("C").get("min") ) && ( newVal <= tempRanges.get("C").get("max")) ) {
+            validRangeCorF = "C";
+        } else if ((newVal >= tempRanges.get("F").get("min") ) && ( newVal <= tempRanges.get("F").get("max"))) {
+            validRangeCorF = "F";
+        }else{
+            logger.warn("Input Temp request {} is invalid",newVal);
+            validRangeCorF = "INVALID";
+        }
+
+        if (CorF == null){
+            // if CorF wasnt initialized or is null set it from lookup
+            CorF = nullCorFLUT.get(validRangeCorF);
+        }
+
+        if ((CorF == 1) && (validRangeCorF == "C")){ 
+            CorF = 0; // input temp takes priority
+        }
+        else if ((CorF == 0) && (validRangeCorF == "F")){
+            CorF = 1; // input temp takes priority
+        }
+        else if (validRangeCorF == "INVALID"){
+            // force min or max temp based on CorF scale to be used
+            newVal = tempRanges.get(tempScaleLUT[CorF]).get(minMaxLUT[CorF]);
+        }
+        
+        return new Integer[]{newVal,CorF}; 
+    }
     public void SetDeviceTempSet(DatagramSocket clientSocket, Integer value) throws Exception {
+        // **value** :  set temperature in degrees celsius or Fahrenheit        
         // Only allow this to happen if this device has been bound
         if (getIsBound() != Boolean.TRUE) {
             return;
         }
+        Integer [] retList;
+        Integer newVal = new Integer(value);
+        Integer outVal = new Integer(value);
+        // Get Celsius or Fahrenheit from status message
+        Integer CorF = GetIntStatusVal("TemUn");
+        // TODO put a param in openhab to allow setting this from the config
+
+        //If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer 
+        //    temperature to use as celsius alone is ambigious
+        Integer halfStep = new Integer(0); //default to C
+
+        retList = ValidateTemperatureRangeForTempSet(newVal,CorF);
+        newVal = retList[0];
+        CorF = retList[1];
+
+        if (CorF == 1){ //If Fahrenheit, 
+            //value argument is degrees F, convert Fahrenheit to Celsius, 
+            //SetTem input to A/C always in Celsius despite passing in 1 to TemUn
+            outVal = new Integer((int) Math.round((newVal-32.)*5.0/9.0)); //Integer Truncated
+            //******************TempRec TemSet Mapping for setting Fahrenheit****************************
+            //Fahren = [68. , 69. , 70. , 71. , 72. , 73. , 74. , 75. , 76. , 77. , 78. , 79. , 80. , 81. , 82. , 83. , 84. , 85. , 86. ]
+            //Celsiu = [20.0, 20.5, 21.1, 21.6, 22.2, 22.7, 23.3, 23.8, 24.4, 25.0, 25.5, 26.1, 26.6, 27.2, 27.7, 28.3, 28.8, 29.4, 30.0]
+            //TemSet = [20,   21,   21,   22,   22,   23,   23,   24,   25,   25,   26,   26,   27,   27,   28,   28,   29,   29,  30, 30]
+            //TemRec = [ 1,    0,    1,    0,    1,    0,    1,    0,   1,    0,    1,    0,    1,    0,    1,    0,    1,    0,   1,  0]
+            //******************TempRec TemSet Mapping for setting Fahrenheit****************************
+            // subtract the float verison - the int version to get the fractional difference
+            // if the difference is positive set halfStep to 1, negative to 0
+            halfStep = ((((newVal-32.)*5.0/9.0) - outVal) > 0) ? 1 : 0;
+        }
 
         // Set the values in the HashMap
         HashMap<String, Integer> parameters = new HashMap<>();
-        parameters.put("TemUn", new Integer(0));
-        parameters.put("SetTem", value);
+        parameters.put("TemUn", CorF);
+        parameters.put("SetTem",outVal);
+        parameters.put("TemRec",halfStep);
 
         ExecuteCommand(clientSocket, parameters);
     }
@@ -380,7 +474,7 @@ public class GreeDevice {
          * "StHt": 0,
          * "TemUn": Temperature unit, 0 for Celsius, 1 for Fahrenheit
          * "HeatCoolType"
-         * "TemRec":
+         * "TemRec": (0 or 1), Send with SetTem, when TemUn==1, distinguishes between upper and lower integer Fahrenheit temp
          * "SvSt": Power Saving
          */
         // Find the valueName in the Returned Status object
@@ -559,6 +653,42 @@ public class GreeDevice {
         stringReader = new StringReader(statusResponseGson.decryptedPack);
 
         statusResponseGson.packJson = gson.fromJson(new JsonReader(stringReader), GreeStatusResponsePack4Gson.class);
+        UpdateTempFtoC();
     }
 
+    private void UpdateTempFtoC(){
+        // Status message back from A/C always reports degrees C
+        //    If using Fahrenheit, us SetTem, TemUn and TemRec to 
+        //    reconstruct the Fahrenheit temperature
+        // Get Celsius or Fahrenheit from status message
+        Integer CorF = GetIntStatusVal("TemUn");
+        Integer newVal = GetIntStatusVal("SetTem");
+        Integer halfStep = GetIntStatusVal("TemRec");
+
+        if (CorF == null  || newVal == null || halfStep == null){
+            logger.warn("SetTem,TemUn or TemRec is invalid, not performing conversion");
+        }
+        else if (CorF == 1){    //convert SetTem to Fahrenheit
+            // Find the valueName in the Returned Status object
+            String columns[] = statusResponseGson.packJson.cols;
+            Integer values[] = statusResponseGson.packJson.dat;
+            List<String> colList = new ArrayList<>(Arrays.asList(columns));
+            int valueArrayposition = colList.indexOf("SetTem");
+            if (valueArrayposition != -1) {
+                //convert Celsius to Fahrenheit,
+                //SetTem status returns degrees C regardless of TempUn setting
+                
+                // Perform the float Celsius to Fahrenheit conversion
+                //     add or subtract 0.5 based on the value of TemRec
+                //     (0 = -0.5, 1 = +0.5)
+                //     Pass into a rounding function, this yeild the correct Fahrenheit 
+                //     Temperature to match A/C display
+                newVal = new Integer((int) Math.round(((newVal*9.0/5.0)+32.0)+ halfStep-0.5));
+                
+                //Update the status array with F temp , 
+                //    assume this is updating the array in situ
+                values[valueArrayposition] = newVal;
+            }
+        }
+    }
 }
