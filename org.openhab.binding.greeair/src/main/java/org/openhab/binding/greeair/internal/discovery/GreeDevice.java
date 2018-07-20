@@ -50,7 +50,6 @@ import com.google.gson.stream.JsonReader;
 public class GreeDevice {
     private final static Charset UTF8_CHARSET = Charset.forName("UTF-8");
     private final static HashMap<String, HashMap<String,Integer>> tempRanges = createTempRangeMap();
-    private final static String [] tempScaleLUT = {"C","F"}; //used to convert TempUn integer to "C" to "F" string for hashmap
     private Boolean mIsBound = false;
     private InetAddress mAddress;
     private int mPort = 0;
@@ -295,6 +294,7 @@ public class GreeDevice {
         // For example if value is 75 and TempUn says Celsius, change TempUn to Fahrenheit
         //
         final String[] minMaxLUT = {"max","min"}; // looks up 0 = C = max, 1 = F = min
+        final String [] tempScaleLUT = {"C","F"}; //Look Up Table used to convert TempUn integer 0,1 to "C" to "F" string for hashmap
         HashMap<String, Integer> nullCorFLUT = new HashMap<>(); // simple look up table for logic
             nullCorFLUT.put("C",new Integer(0));
             nullCorFLUT.put("F",new Integer(1));
