@@ -66,7 +66,7 @@ The following channels are supported for fans:
 Things:
 
 ```
-Thing greeair:greeairthing:b2d08bb1 [ ipAddress="192.168.12.62", refresh=2 ]
+Thing greeair:greeairthing:b2d08bb1 [ ipAddress="192.168.12.62", broadcastAddress="192.168.1.255", refresh=2 ]
 ```
 
 Items:
